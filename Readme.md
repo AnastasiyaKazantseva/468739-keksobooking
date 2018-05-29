@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анастасия Казанцева](https://up.htmlacademy.ru/javascript/14/user/468739).
-* Наставник: `Неизвестно`.
+* Наставник: [Алексей Юрченко](https://htmlacademy.ru/profile/id487085).
 
 ---
 
