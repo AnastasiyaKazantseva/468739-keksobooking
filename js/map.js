@@ -45,7 +45,7 @@ var pinTemplate = document.querySelector('template').content.querySelector('.map
 var mapListElement = document.querySelector('.map');
 var mapTemplate = document.querySelector('template').content.querySelector('.map__card');
 var mapFilters = document.querySelector('.map__filters-container');
-var dictionary = {
+var typeDictionary = {
   'palace': 'Дворец',
   'flat': 'Квартира',
   'house': 'Дом',
@@ -59,10 +59,8 @@ var sortElements = function (array) {
 };
 
 var getFeatures = function () {
-  var randomDeleteElements = Math.floor(Math.random() * AD_FEATURES.length);
-  var features = AD_FEATURES.slice(0);
-  features = sortElements(features);
-  return features.splice(0, randomDeleteElements);
+  var count = Math.floor(Math.random() * AD_FEATURES.length);
+  return sortElements(AD_FEATURES.slice()).splice(0, count);
 };
 
 var addLeadingZeros = function (value, needingLenght) {
@@ -110,7 +108,9 @@ mapToggle.classList.remove('map--faded');
 
 for (var i = 0; i < similarAds.length; i++) {
   var pinElement = pinTemplate.cloneNode(true);
+
   var mapElement = mapTemplate.cloneNode(true);
+
   pinElement.style = 'left: ' + similarAds[i].location.x + 'px; top: ' + similarAds[i].location.y + 'px;';
   pinElement.querySelector('img').src = similarAds[i].author.avatar;
   pinElement.querySelector('img').alt = similarAds[i].offer.title;
@@ -119,20 +119,24 @@ for (var i = 0; i < similarAds.length; i++) {
   mapElement.querySelector('.popup__title').textContent = similarAds[i].offer.title;
   mapElement.querySelector('.popup__text--address').textContent = similarAds[i].offer.address;
   mapElement.querySelector('.popup__text--price').textContent = similarAds[i].offer.price + '₽/ночь';
-  mapElement.querySelector('.popup__type').textContent = dictionary[similarAds[i].offer.type];
+  mapElement.querySelector('.popup__type').textContent = typeDictionary[similarAds[i].offer.type];
   mapElement.querySelector('.popup__text--capacity').textContent = similarAds[i].offer.rooms + ' комнат (-ы) для ' + similarAds[i].offer.guests + ' гостя (-ей)';
   mapElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + similarAds[i].offer.checkin + ', выезд до ' + similarAds[i].offer.checkout;
   mapElement.querySelector('.popup__description').textContent = similarAds[i].offer.description;
   mapElement.querySelector('.popup__avatar').src = similarAds[i].author.avatar;
+
   var insertedMapListElement = mapListElement.insertBefore(mapElement, mapFilters);
   var photoTemplate = insertedMapListElement.querySelector('.popup__photo');
   photoTemplate.src = similarAds[i].offer.photos[0];
+
   for (var j = 1; j < similarAds[i].offer.photos.length; j++) {
     var photoNext = photoTemplate.cloneNode(true);
     photoNext.src = similarAds[i].offer.photos[j];
     photoTemplate.parentNode.appendChild(photoNext);
   }
+
   var featuresList = insertedMapListElement.querySelector('.popup__features');
+
   for (var g = 0; g < AD_FEATURES.length; g++) {
     if (similarAds[i].offer.features.indexOf(AD_FEATURES[g]) === -1) {
       var deleteElement = featuresList.querySelector('.popup__feature--' + AD_FEATURES[g]);
