@@ -13,8 +13,8 @@ var AD_TITLES = [
 
 var AD_TYPES = [
   {
-    'type': 'palace',
-    'minprice': 10000
+    'type': 'bungalo',
+    'minprice': 0
   },
   {
     'type': 'flat',
@@ -25,8 +25,8 @@ var AD_TYPES = [
     'minprice': 5000
   },
   {
-    'type': 'bungalo',
-    'minprice': 0
+    'type': 'palace',
+    'minprice': 10000
   }
 ];
 
@@ -90,6 +90,8 @@ var getAds = function () {
   for (var i = 0; i < 8; i++) {
     var locationX = 300 + Math.round(600 * Math.random());
     var locationY = 130 + Math.round(500 * Math.random());
+    var currentPhotos = AD_PHOTOS.slice();
+    var currentTypes = AD_TYPES.slice();
     similarAds[i] = {
       'author': {
         'avatar': 'img/avatars/user' + addLeadingZeros(i + 1, 2) + '.png'
@@ -98,14 +100,14 @@ var getAds = function () {
         'title': AD_TITLES[i],
         'address': locationX + ', ' + locationY,
         'price': 1000 + Math.round(999000 * Math.random()),
-        'type': sortElements(AD_TYPES)[0].type,
+        'type': sortElements(currentTypes)[0].type,
         'rooms': 1 + Math.round(99 * Math.random()),
         'guests': 1 + Math.round(2 * Math.random()),
         'checkin': sortElements(AD_TIMES)[0],
         'checkout': sortElements(AD_TIMES)[0],
         'features': getFeatures(),
         'description': '',
-        'photos': sortElements(AD_PHOTOS)
+        'photos': sortElements(currentPhotos)
       },
       'location': {
         'x': locationX,
@@ -240,10 +242,7 @@ var typeSelect = document.getElementById('type');
 var priceInput = document.getElementById('price');
 
 typeSelect.addEventListener('change', function () {
-  var i = 0;
-  while (AD_TYPES[i].type !== typeSelect.value) {
-    i++;
-  }
+  var i = typeSelect.selectedIndex;
   priceInput.min = AD_TYPES[i].minprice;
   priceInput.placeholder = AD_TYPES[i].minprice;
 });
