@@ -72,11 +72,6 @@ var sortElements = function (array) {
   });
 };
 
-var getRandom = function (array) {
-  var randomElement = array[Math.floor(Math.random() * array.length)];
-  return randomElement;
-};
-
 var getFeatures = function () {
   var count = Math.floor(Math.random() * AD_FEATURES.length);
   return sortElements(AD_FEATURES.slice()).splice(0, count);
@@ -96,6 +91,7 @@ var getAds = function () {
     var locationX = 300 + Math.round(600 * Math.random());
     var locationY = 130 + Math.round(500 * Math.random());
     var currentPhotos = AD_PHOTOS.slice();
+    var currentTypes = AD_TYPES.slice();
     similarAds[i] = {
       'author': {
         'avatar': 'img/avatars/user' + addLeadingZeros(i + 1, 2) + '.png'
@@ -104,11 +100,11 @@ var getAds = function () {
         'title': AD_TITLES[i],
         'address': locationX + ', ' + locationY,
         'price': 1000 + Math.round(999000 * Math.random()),
-        'type': getRandom(AD_TYPES).type,
+        'type': sortElements(currentTypes)[0].type,
         'rooms': 1 + Math.round(99 * Math.random()),
         'guests': 1 + Math.round(2 * Math.random()),
-        'checkin': getRandom(AD_TIMES),
-        'checkout': getRandom(AD_TIMES),
+        'checkin': sortElements(AD_TIMES)[0],
+        'checkout': sortElements(AD_TIMES)[0],
         'features': getFeatures(),
         'description': '',
         'photos': sortElements(currentPhotos)
@@ -157,7 +153,7 @@ var pinMainDimensions = getComputedStyle(mapPinMain);
 
 var locationPinMain = document.querySelector('#address');
 
-var pinInactiveCoordinates = Math.round(parseInt(pinMainDimensions.width, 10) / 2) + ', ' + Math.round(parseInt(pinMainDimensions.height, 10) / 2);
+var pinInactiveCoordinates = Math.round((parseInt(mapPinMain.style.left, 10) + parseInt(pinMainDimensions.width, 10) / 2)) + ', ' + Math.round((parseInt(mapPinMain.style.top, 10) + parseInt(pinMainDimensions.height, 10) / 2));
 
 locationPinMain.setAttribute('value', pinInactiveCoordinates);
 
@@ -165,7 +161,7 @@ var addForm = document.querySelector('.ad-form');
 
 var similarAds = getAds();
 
-mapPinMain.addEventListener('mouseup', function () {
+mapPinMain.addEventListener('mousedown', function (evt) {
   var fieldsets = addForm.querySelectorAll('fieldset');
 
   mapListElement.classList.remove('map--faded');
@@ -177,9 +173,64 @@ mapPinMain.addEventListener('mouseup', function () {
 
   addPins(similarAds);
 
-  var pinСoordinates = Math.round((parseInt(mapPinMain.style.left, 10) + parseInt(pinMainDimensions.width, 10) / 2)) + ', ' + Math.round((parseInt(mapPinMain.style.top, 10) + parseInt(pinMainDimensions.height, 10)));
+  evt.preventDefault();
 
-  locationPinMain.setAttribute('value', pinСoordinates);
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var mapBlock = document.querySelector('body');
+
+  var mapDimensions = getComputedStyle(mapBlock);
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    if ((mapPinMain.offsetTop - shift.y) > (630 - parseInt(pinMainDimensions.height, 10))) {
+      mapPinMain.style.top = (630 - parseInt(pinMainDimensions.height, 10)) + 'px';
+    } else if ((mapPinMain.offsetTop - shift.y) < 130) {
+      mapPinMain.style.top = 130 + 'px';
+    } else {
+      mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+    }
+
+    if ((mapPinMain.offsetLeft - shift.x) > (parseInt(mapDimensions.width, 10) - parseInt(pinMainDimensions.width, 10))) {
+      mapPinMain.style.left = (parseInt(mapDimensions.width, 10) - parseInt(pinMainDimensions.width, 10)) + 'px';
+    } else if ((mapPinMain.offsetLeft - shift.x) < 0) {
+      mapPinMain.style.left = 0 + 'px';
+    } else {
+      mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+    }
+
+    var pinСoordinates = Math.round((parseInt(mapPinMain.style.left, 10) + parseInt(pinMainDimensions.width, 10) / 2)) + ', ' + Math.round(parseInt(mapPinMain.style.top, 10) + parseInt(pinMainDimensions.height, 10));
+
+    locationPinMain.setAttribute('value', pinСoordinates);
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    var pinСoordinates = Math.round((parseInt(mapPinMain.style.left, 10) + parseInt(pinMainDimensions.width, 10) / 2)) + ', ' + Math.round(parseInt(mapPinMain.style.top, 10) + parseInt(pinMainDimensions.height, 10));
+
+    locationPinMain.setAttribute('value', pinСoordinates);
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
 
 var addPopup = function (currentAd) {
