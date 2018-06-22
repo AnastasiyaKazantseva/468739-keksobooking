@@ -149,13 +149,9 @@ var addPins = function (similarAds) {
       pinElement.querySelector('img').alt = data.offer.title;
       pinListElement.appendChild(pinElement);
 
-      var openPopup = function () {
-        addPopup(data);
-      };
-
       var onPinEnterPress = function (evt) {
         if (!evt.keyCode || evt.keyCode === ENTER_KEYCODE) {
-          openPopup(evt);
+          addPopup(data);
         }
       };
 
