@@ -53,6 +53,8 @@ var AD_PHOTOS = [
 
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
 
 var pinListElement = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -138,13 +140,25 @@ var getAds = function () {
   return similarAds;
 };
 
+var toMapCoordinates = function (x, y) {
+  var returnValue;
+
+  if (y === 0) {
+    returnValue = x - PIN_WIDTH / 2;
+  } else if (x === 0) {
+    returnValue = y - PIN_HEIGHT;
+  }
+
+  return returnValue;
+};
+
 var addPins = function (similarAds) {
   for (var i = 0; i < similarAds.length; i++) {
     (function () {
       var pinElement = pinTemplate.cloneNode(true);
       var data = similarAds[i];
 
-      pinElement.style = 'left: ' + data.location.x + 'px; top: ' + data.location.y + 'px;';
+      pinElement.style = 'left: ' + toMapCoordinates(data.location.x, 0) + 'px; top: ' + toMapCoordinates(0, data.location.y) + 'px;';
       pinElement.querySelector('img').src = data.author.avatar;
       pinElement.querySelector('img').alt = data.offer.title;
       pinListElement.appendChild(pinElement);
@@ -166,14 +180,45 @@ var mapPinMain = document.querySelector('.map__pin--main');
 var pinMainDimensions = getComputedStyle(mapPinMain);
 
 var locationPinMain = document.querySelector('#address');
-var pinInactiveCoordinates = Math.round(parseInt(pinMainDimensions.width, 10) / 2) + ', ' + Math.round(parseInt(pinMainDimensions.height, 10) / 2);
 
-var addForm = document.querySelector('.ad-form');
-var similarAds = getAds();
+var getPinCoordinateX = function () {
+  var left = parseInt(mapPinMain.style.left, 10);
+  var width = parseInt(pinMainDimensions.width, 10) / 2;
+
+  return Math.round(left + width);
+};
+
+var getPinCoordinateY = function () {
+  var top = parseInt(mapPinMain.style.top, 10);
+  var height = parseInt(pinMainDimensions.height, 10) / 2;
+
+  return Math.round(top + height);
+};
+
+var pinMainHeight = function () {
+  var height = Math.round(parseInt(pinMainDimensions.height, 10));
+  var pinPointHeight = PIN_HEIGHT - PIN_WIDTH;
+
+  return height + pinPointHeight;
+};
+
+var getPinActiveCoordinateY = function () {
+  var top = Math.round(parseInt(mapPinMain.style.top, 10));
+
+  return top + pinMainHeight();
+};
+
+var pinInactiveCoordinates = getPinCoordinateX() + ', ' + getPinCoordinateY();
 
 locationPinMain.setAttribute('value', pinInactiveCoordinates);
 
-mapPinMain.addEventListener('mouseup', function () {
+var addForm = document.querySelector('.ad-form');
+
+var similarAds = getAds();
+
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
   var fieldsets = addForm.querySelectorAll('fieldset');
 
   mapListElement.classList.remove('map--faded');
@@ -185,9 +230,56 @@ mapPinMain.addEventListener('mouseup', function () {
 
   addPins(similarAds);
 
-  var pinСoordinates = Math.round((parseInt(mapPinMain.style.left, 10) + parseInt(pinMainDimensions.width, 10) / 2)) + ', ' + Math.round((parseInt(mapPinMain.style.top, 10) + parseInt(pinMainDimensions.height, 10)));
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
 
-  locationPinMain.setAttribute('value', pinСoordinates);
+  var clamp = function (min, max, value) {
+    return Math.min(max, Math.max(min, value));
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var pinActiveCoordinates = getPinCoordinateX() + ', ' + getPinActiveCoordinateY();
+    locationPinMain.setAttribute('value', pinActiveCoordinates);
+
+    var minTop = 130 - pinMainHeight();
+    var maxTop = 630 - pinMainHeight();
+    var nextTop = clamp(minTop, maxTop, mapPinMain.offsetTop - shift.y);
+    mapPinMain.style.top = nextTop + 'px';
+
+    var mapBlock = document.querySelector('body');
+    var mapDimensions = getComputedStyle(mapBlock);
+    var maxLeft = parseInt(mapDimensions.width, 10) - parseInt(pinMainDimensions.width, 10);
+
+    var nextLeft = clamp(0, maxLeft, mapPinMain.offsetLeft - shift.x);
+    mapPinMain.style.left = nextLeft + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    var pinActiveCoordinates = getPinCoordinateX() + ', ' + getPinActiveCoordinateY();
+    locationPinMain.setAttribute('value', pinActiveCoordinates);
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
 
 var addPopup = function (currentAd) {
@@ -245,6 +337,7 @@ document.addEventListener('keydown', onPopupEscPress);
 
 var closePopup = function () {
   var oldPopup = document.querySelector('.map__card');
+
   if (oldPopup) {
     oldPopup.parentNode.removeChild(oldPopup);
   }
@@ -291,5 +384,4 @@ checkRoomCapacity();
 
 roomNumber.addEventListener('change', checkRoomCapacity);
 capacity.addEventListener('change', checkRoomCapacity);
-
 
