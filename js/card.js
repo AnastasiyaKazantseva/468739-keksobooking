@@ -6,7 +6,8 @@
 
   window.card = {
     addPopup: function (currentAd) {
-      window.map.closePopup();
+      var oldPopup = document.querySelector('.map__card');
+      window.map.deleteElement(oldPopup);
 
       var popupElement = mapTemplate.cloneNode(true);
 
@@ -21,7 +22,14 @@
 
       var insertedMapListElement = window.map.mapListElement.insertBefore(popupElement, mapFilters);
       var photoTemplate = insertedMapListElement.querySelector('.popup__photo');
-      photoTemplate.src = currentAd.offer.photos[0];
+
+      if (currentAd.offer.photos.length > 0) {
+        photoTemplate.src = currentAd.offer.photos[0];
+      } else {
+        var popup = document.querySelector('.popup');
+        var photoList = document.querySelector('.popup__photos');
+        popup.removeChild(photoList);
+      }
 
       for (var j = 1; j < currentAd.offer.photos.length; j++) {
         var photoNext = photoTemplate.cloneNode(true);

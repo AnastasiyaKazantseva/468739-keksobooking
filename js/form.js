@@ -42,4 +42,49 @@
 
   roomNumber.addEventListener('change', checkRoomCapacity);
   capacity.addEventListener('change', checkRoomCapacity);
+
+  var inactivatePage = function () {
+    window.map.addForm.reset();
+
+    var oldPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    for (var i = 0; i < oldPin.length; i++) {
+      window.map.deleteElement(oldPin[i]);
+    }
+
+    var oldPopup = document.querySelector('.map__card');
+    window.map.deleteElement(oldPopup);
+
+    window.map.activatePage(1);
+
+    window.map.mapPinMain.style.top = window.map.PIN_MAIN_TOP + 'px';
+    window.map.mapPinMain.style.left = window.map.PIN_MAIN_LEFT + 'px';
+    window.map.locationPinMain.setAttribute('value', window.map.getPinInactiveCoordinates());
+  };
+
+  var success = document.querySelector('.success');
+
+  var onLoad = function () {
+    success.classList.remove('hidden');
+
+    inactivatePage();
+  };
+
+  window.map.addForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+
+    window.backend.upload(new FormData(window.map.addForm), onLoad, window.data.onError);
+  });
+
+  var onOverlayClosePress = function (evt) {
+    if (!evt.keyCode || evt.keyCode === window.map.ESC_KEYCODE) {
+      success.classList.add('hidden');
+    }
+  };
+
+  success.addEventListener('click', onOverlayClosePress);
+  document.addEventListener('keydown', onOverlayClosePress);
+
+  var resetButton = document.querySelector('.ad-form__reset');
+  resetButton.addEventListener('click', inactivatePage);
 })();
