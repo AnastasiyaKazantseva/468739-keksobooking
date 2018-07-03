@@ -40,7 +40,8 @@
 
     onPopupClosePress: function (evt) {
       if (!evt.keyCode || (evt.keyCode === window.map.ENTER_KEYCODE && evt.target.tagName !== 'INPUT')) {
-        window.map.closePopup();
+        var oldPopup = document.querySelector('.map__card');
+        window.map.deleteElement(oldPopup);
       }
     },
 

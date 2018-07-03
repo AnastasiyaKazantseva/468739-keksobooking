@@ -37,9 +37,15 @@
       'bungalo': 'Бунгало'
     },
 
+    indexAds: [],
+    similarAds: [],
+
     onLoad: function (similarAds) {
-      for (var i = 0; i < similarAds.length; i++) {
+      window.data.similarAds = similarAds;
+      var takeNumber = similarAds.length > 5 ? 5 : similarAds.length;
+      for (var i = 0; i < takeNumber; i++) {
         window.pin.addPins(similarAds[i]);
+        window.data.indexAds.push(i);
       }
     },
 
