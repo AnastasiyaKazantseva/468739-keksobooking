@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
+  var PIN_MAIN_LEFT = 570;
+  var PIN_MAIN_TOP = 375;
   var typeSelect = document.getElementById('type');
   var priceInput = document.getElementById('price');
 
   typeSelect.addEventListener('change', function () {
     var i = typeSelect.selectedIndex;
-    priceInput.min = window.data.AD_TYPES[i].minprice;
-    priceInput.placeholder = window.data.AD_TYPES[i].minprice;
+    priceInput.min = window.utils.MIN_PRICES[i];
+    priceInput.placeholder = window.utils.MIN_PRICES[i];
   });
 
   var timeInSelect = document.getElementById('timein');
@@ -46,19 +48,12 @@
   var inactivatePage = function () {
     window.map.addForm.reset();
 
-    var oldPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    window.pin.clearAll();
+    window.card.deletePopup();
+    window.map.disactivateForm();
 
-    for (var i = 0; i < oldPin.length; i++) {
-      window.map.deleteElement(oldPin[i]);
-    }
-
-    var oldPopup = document.querySelector('.map__card');
-    window.map.deleteElement(oldPopup);
-
-    window.map.activatePage(1);
-
-    window.map.mapPinMain.style.top = window.map.PIN_MAIN_TOP + 'px';
-    window.map.mapPinMain.style.left = window.map.PIN_MAIN_LEFT + 'px';
+    window.map.mapPinMain.style.top = PIN_MAIN_TOP + 'px';
+    window.map.mapPinMain.style.left = PIN_MAIN_LEFT + 'px';
     window.map.locationPinMain.setAttribute('value', window.map.getPinInactiveCoordinates());
   };
 
@@ -77,7 +72,7 @@
   });
 
   var onOverlayClosePress = function (evt) {
-    if (!evt.keyCode || evt.keyCode === window.map.ESC_KEYCODE) {
+    if (!evt.keyCode || evt.keyCode === window.utils.ESC_KEYCODE) {
       success.classList.add('hidden');
     }
   };

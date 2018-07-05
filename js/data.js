@@ -2,51 +2,11 @@
 
 (function () {
   window.data = {
-    AD_TYPES: [
-      {
-        'type': 'bungalo',
-        'minprice': 0
-      },
-      {
-        'type': 'flat',
-        'minprice': 1000
-      },
-      {
-        'type': 'house',
-        'minprice': 5000
-      },
-      {
-        'type': 'palace',
-        'minprice': 10000
-      }
-    ],
+    ads: [],
 
-    AD_FEATURES: [
-      'wifi',
-      'dishwasher',
-      'parking',
-      'washer',
-      'elevator',
-      'conditioner'
-    ],
-
-    typeDictionary: {
-      'palace': 'Дворец',
-      'flat': 'Квартира',
-      'house': 'Дом',
-      'bungalo': 'Бунгало'
-    },
-
-    indexAds: [],
-    similarAds: [],
-
-    onLoad: function (similarAds) {
-      window.data.similarAds = similarAds;
-      var takeNumber = similarAds.length > 5 ? 5 : similarAds.length;
-      for (var i = 0; i < takeNumber; i++) {
-        window.pin.addPins(similarAds[i]);
-        window.data.indexAds.push(i);
-      }
+    onLoad: function (ads) {
+      window.state.ads = ads;
+      window.pin.renderAll();
     },
 
     onError: function (errorMessage) {
@@ -61,7 +21,7 @@
       node.insertAdjacentElement('afterbegin', message);
 
       var onOverlayClosePress = function (evt) {
-        if (!evt.keyCode || evt.keyCode === window.map.ESC_KEYCODE) {
+        if (!evt.keyCode || evt.keyCode === window.utils.ESC_KEYCODE) {
           node.classList.add('hidden');
         }
       };

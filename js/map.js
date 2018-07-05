@@ -7,10 +7,6 @@
   var MAX_TOP = 630;
 
   window.map = {
-    ENTER_KEYCODE: 13,
-    ESC_KEYCODE: 27,
-    PIN_MAIN_LEFT: 570,
-    PIN_MAIN_TOP: 375,
     mapListElement: document.querySelector('.map'),
     addForm: document.querySelector('.ad-form'),
     locationPinMain: document.querySelector('#address'),
@@ -21,46 +17,43 @@
     },
 
     toMapCoordinates: function (x, y) {
-      var returnValue;
-
       if (y === 0) {
-        returnValue = x - PIN_WIDTH / 2;
-      } else if (x === 0) {
-        returnValue = y - PIN_HEIGHT;
+        return x - PIN_WIDTH / 2;
       }
 
-      return returnValue;
-    },
-
-    deleteElement: function (oldElement) {
-      if (oldElement) {
-        oldElement.parentNode.removeChild(oldElement);
+      if (x === 0) {
+        return y - PIN_HEIGHT;
       }
+
+      return undefined;
     },
 
     onPopupClosePress: function (evt) {
-      if (!evt.keyCode || (evt.keyCode === window.map.ENTER_KEYCODE && evt.target.tagName !== 'INPUT')) {
-        var oldPopup = document.querySelector('.map__card');
-        window.map.deleteElement(oldPopup);
+      if (!evt.keyCode || (evt.keyCode === window.utils.ENTER_KEYCODE && evt.target.tagName !== 'INPUT')) {
+        window.card.deletePopup();
       }
     },
 
-    activatePage: function (mode) {
+    activateForm: function () {
       var fieldsets = window.map.addForm.querySelectorAll('fieldset');
 
-      if (mode === 0) {
-        for (var i = 0; i < fieldsets.length; i++) {
-          fieldsets[i].removeAttribute('disabled');
-        }
-        window.map.mapListElement.classList.remove('map--faded');
-        window.map.addForm.classList.remove('ad-form--disabled');
-      } else if (mode === 1) {
-        for (var j = 0; j < fieldsets.length; j++) {
-          fieldsets[j].setAttribute('disabled', 'disabled');
-        }
-        window.map.mapListElement.classList.add('map--faded');
-        window.map.addForm.classList.add('ad-form--disabled');
+      for (var i = 0; i < fieldsets.length; i++) {
+        fieldsets[i].removeAttribute('disabled');
       }
+
+      window.map.mapListElement.classList.remove('map--faded');
+      window.map.addForm.classList.remove('ad-form--disabled');
+    },
+
+    disactivateForm: function () {
+      var fieldsets = window.map.addForm.querySelectorAll('fieldset');
+
+      for (var i = 0; i < fieldsets.length; i++) {
+        fieldsets[i].setAttribute('disabled', 'disabled');
+      }
+
+      window.map.mapListElement.classList.add('map--faded');
+      window.map.addForm.classList.add('ad-form--disabled');
     }
   };
 
@@ -102,17 +95,13 @@
   window.map.mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    window.map.activatePage(0);
+    window.map.activateForm();
 
     window.backend.load(window.data.onLoad, window.data.onError);
 
     var startCoords = {
       x: evt.clientX,
       y: evt.clientY
-    };
-
-    var clamp = function (min, max, value) {
-      return Math.min(max, Math.max(min, value));
     };
 
     var onMouseMove = function (moveEvt) {
@@ -132,14 +121,14 @@
 
       var minTop = MIN_TOP - getPinMainHeight();
       var maxTop = MAX_TOP - getPinMainHeight();
-      var nextTop = clamp(minTop, maxTop, window.map.mapPinMain.offsetTop - shift.y);
+      var nextTop = window.utils.clamp(minTop, maxTop, window.map.mapPinMain.offsetTop - shift.y);
       window.map.mapPinMain.style.top = nextTop + 'px';
 
       var mapBlock = document.querySelector('body');
       var mapDimensions = getComputedStyle(mapBlock);
       var maxLeft = parseInt(mapDimensions.width, 10) - parseInt(pinMainDimensions.width, 10);
 
-      var nextLeft = clamp(0, maxLeft, window.map.mapPinMain.offsetLeft - shift.x);
+      var nextLeft = window.utils.clamp(0, maxLeft, window.map.mapPinMain.offsetLeft - shift.x);
       window.map.mapPinMain.style.left = nextLeft + 'px';
     };
 
@@ -157,9 +146,8 @@
   });
 
   var onPopupEscPress = function (evt) {
-    if (evt.keyCode === window.map.ESC_KEYCODE) {
-      var oldPopup = document.querySelector('.map__card');
-      window.map.deleteElement(oldPopup);
+    if (evt.keyCode === window.utils.ESC_KEYCODE) {
+      window.card.deletePopup();
     }
   };
 
