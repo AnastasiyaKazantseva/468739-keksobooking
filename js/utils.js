@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEBOUNCE_INTERVAL = 500;
+
   window.utils = {
     ENTER_KEYCODE: 13,
     ESC_KEYCODE: 27,
@@ -36,6 +38,20 @@
 
     clamp: function (min, max, value) {
       return Math.min(max, Math.max(min, value));
+    },
+
+    debounce: function (fun) {
+      var lastTimeout = null;
+
+      return function () {
+        var args = arguments;
+        if (lastTimeout) {
+          window.clearTimeout(lastTimeout);
+        }
+        lastTimeout = window.setTimeout(function () {
+          fun.apply(null, args);
+        }, DEBOUNCE_INTERVAL);
+      };
     }
   };
 })();

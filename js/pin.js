@@ -5,15 +5,10 @@
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
   var toMapCoordinates = function (x, y) {
-    if (y === 0) {
-      return x - window.pin.WIDTH / 2;
-    }
+    var left = x - window.pin.WIDTH / 2;
+    var top = y - window.pin.HEIGHT;
 
-    if (x === 0) {
-      return y - window.pin.HEIGHT;
-    }
-
-    return undefined;
+    return 'left: ' + left + 'px; top: ' + top + 'px';
   };
 
   var priceFilters = {
@@ -62,7 +57,7 @@
     add: function (data) {
       var pinClone = pinTemplate.cloneNode(true);
 
-      pinClone.style = 'left: ' + toMapCoordinates(data.location.x, 0) + 'px; top: ' + toMapCoordinates(0, data.location.y) + 'px;';
+      pinClone.style = toMapCoordinates(data.location.x, data.location.y);
       pinClone.querySelector('img').src = data.author.avatar;
       pinClone.querySelector('img').alt = data.offer.title;
       pin.appendChild(pinClone);

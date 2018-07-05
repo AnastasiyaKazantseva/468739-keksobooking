@@ -5,7 +5,7 @@
   var mapFilters = document.querySelector('.map__filters-container');
 
   window.card = {
-    delete: function () {
+    remove: function () {
       var oldCard = document.querySelector('.map__card');
 
       if (oldCard) {
@@ -14,7 +14,7 @@
     },
 
     add: function (currentAd) {
-      window.card.delete();
+      window.card.remove();
 
       var popupClone = cardTemplate.cloneNode(true);
 

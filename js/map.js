@@ -16,7 +16,7 @@
 
     onPopupClosePress: function (evt) {
       if (!evt.keyCode || (evt.keyCode === window.utils.ENTER_KEYCODE && evt.target.tagName !== 'INPUT')) {
-        window.card.delete();
+        window.card.remove();
       }
     },
 
@@ -133,7 +133,7 @@
 
   var onPopupEscPress = function (evt) {
     if (evt.keyCode === window.utils.ESC_KEYCODE) {
-      window.card.delete();
+      window.card.remove();
     }
   };
 

@@ -49,7 +49,7 @@
     window.map.addForm.reset();
 
     window.pin.clearAll();
-    window.card.delete();
+    window.card.remove();
     window.map.disactivateForm();
 
     window.map.pinMain.style.top = PIN_MAIN_TOP + 'px';
