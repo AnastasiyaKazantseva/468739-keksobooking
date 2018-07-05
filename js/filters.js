@@ -5,7 +5,7 @@
     document.getElementById('housing-' + item).addEventListener('change', window.debounce(function (evt) {
       window.state.filters[item] = evt.target.value;
       window.pin.renderAll();
-      window.card.deletePopup();
+      window.card.delete();
     }));
   });
 
@@ -13,7 +13,7 @@
     document.getElementById('filter-' + name).addEventListener('click', window.debounce(function (evt) {
       window.state.filters[name] = evt.target.checked;
       window.pin.renderAll();
-      window.card.deletePopup();
+      window.card.delete();
     }));
   });
 })();

@@ -49,11 +49,11 @@
     window.map.addForm.reset();
 
     window.pin.clearAll();
-    window.card.deletePopup();
+    window.card.delete();
     window.map.disactivateForm();
 
-    window.map.mapPinMain.style.top = PIN_MAIN_TOP + 'px';
-    window.map.mapPinMain.style.left = PIN_MAIN_LEFT + 'px';
+    window.map.pinMain.style.top = PIN_MAIN_TOP + 'px';
+    window.map.pinMain.style.left = PIN_MAIN_LEFT + 'px';
     window.map.locationPinMain.setAttribute('value', window.map.getPinInactiveCoordinates());
   };
 

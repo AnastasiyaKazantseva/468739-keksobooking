@@ -2,8 +2,6 @@
 
 (function () {
   window.data = {
-    ads: [],
-
     onLoad: function (ads) {
       window.state.ads = ads;
       window.pin.renderAll();

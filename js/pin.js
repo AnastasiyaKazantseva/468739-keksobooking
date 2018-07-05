@@ -1,8 +1,20 @@
 'use strict';
 
 (function () {
-  var pinListElement = document.querySelector('.map__pins');
+  var pin = document.querySelector('.map__pins');
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+
+  var toMapCoordinates = function (x, y) {
+    if (y === 0) {
+      return x - window.pin.WIDTH / 2;
+    }
+
+    if (x === 0) {
+      return y - window.pin.HEIGHT;
+    }
+
+    return undefined;
+  };
 
   var priceFilters = {
     low: function (value) {
@@ -16,57 +28,54 @@
     }
   };
 
+  var makeValueFilter = function (name) {
+    return function (value, ad) {
+      return value === 'any' || value === ad.offer[name] + '';
+    };
+  };
+
+  var makeBoolFilter = function (name) {
+    return function (value, ad) {
+      return !value || ad.offer.features.includes(name);
+    };
+  };
+
   var filters = {
-    type: function (value, ad) {
-      return value === 'any' || value === ad.offer.type;
-    },
+    type: makeValueFilter('type'),
     price: function (value, ad) {
       return value === 'any' || priceFilters[value](ad.offer.price);
     },
-    rooms: function (value, ad) {
-      return value === 'any' || value === ad.offer.rooms + '';
-    },
-    guests: function (value, ad) {
-      return value === 'any' || value === ad.offer.guests + '';
-    },
-    wifi: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('wifi') !== -1);
-    },
-    dishwasher: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('dishwasher') !== -1);
-    },
-    parking: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('parking') !== -1);
-    },
-    washer: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('washer') !== -1);
-    },
-    elevator: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('elevator') !== -1);
-    },
-    conditioner: function (value, ad) {
-      return value === false || value === (ad.offer.features.indexOf('conditioner') !== -1);
-    }
+    rooms: makeValueFilter('rooms'),
+    guests: makeValueFilter('guests'),
+    wifi: makeBoolFilter('wifi'),
+    dishwasher: makeBoolFilter('dishwasher'),
+    parking: makeBoolFilter('parking'),
+    washer: makeBoolFilter('washer'),
+    elevator: makeBoolFilter('elevator'),
+    conditioner: makeBoolFilter('conditioner')
   };
 
   window.pin = {
-    add: function (data) {
-      var pinElement = pinTemplate.cloneNode(true);
+    WIDTH: 50,
+    HEIGHT: 70,
 
-      pinElement.style = 'left: ' + window.map.toMapCoordinates(data.location.x, 0) + 'px; top: ' + window.map.toMapCoordinates(0, data.location.y) + 'px;';
-      pinElement.querySelector('img').src = data.author.avatar;
-      pinElement.querySelector('img').alt = data.offer.title;
-      pinListElement.appendChild(pinElement);
+    add: function (data) {
+      var pinClone = pinTemplate.cloneNode(true);
+
+      pinClone.style = 'left: ' + toMapCoordinates(data.location.x, 0) + 'px; top: ' + toMapCoordinates(0, data.location.y) + 'px;';
+      pinClone.querySelector('img').src = data.author.avatar;
+      pinClone.querySelector('img').alt = data.offer.title;
+      pin.appendChild(pinClone);
 
       var onPinEnterPress = function (evt) {
         if (!evt.keyCode || evt.keyCode === window.utils.ENTER_KEYCODE) {
-          window.card.addPopup(data);
+          window.card.add(data);
         }
       };
 
-      pinElement.addEventListener('click', onPinEnterPress);
+      pinClone.addEventListener('click', onPinEnterPress);
 
-      pinElement.addEventListener('keydown', onPinEnterPress);
+      pinClone.addEventListener('keydown', onPinEnterPress);
     },
 
     clearAll: function () {
