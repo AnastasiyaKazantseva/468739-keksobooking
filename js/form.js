@@ -46,13 +46,24 @@
   roomNumber.addEventListener('change', checkRoomCapacity);
   capacity.addEventListener('change', checkRoomCapacity);
 
+  var disactivateForm = function () {
+    var fieldsets = window.map.addForm.querySelectorAll('fieldset');
+
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].setAttribute('disabled', 'disabled');
+    }
+
+    window.map.block.classList.add('map--faded');
+    window.map.addForm.classList.add('ad-form--disabled');
+  };
+
   var inactivatePage = function () {
     window.map.addForm.reset();
     filters.reset();
 
     window.pin.clearAll();
     window.card.remove();
-    window.map.disactivateForm();
+    disactivateForm();
 
     window.map.pinMain.style.top = PIN_MAIN_TOP + 'px';
     window.map.pinMain.style.left = PIN_MAIN_LEFT + 'px';

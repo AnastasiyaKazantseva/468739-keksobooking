@@ -18,17 +18,6 @@
       if (!evt.keyCode || (evt.keyCode === window.utils.ENTER_KEYCODE && evt.target.tagName !== 'INPUT')) {
         window.card.remove();
       }
-    },
-
-    disactivateForm: function () {
-      var fieldsets = window.map.addForm.querySelectorAll('fieldset');
-
-      for (var i = 0; i < fieldsets.length; i++) {
-        fieldsets[i].setAttribute('disabled', 'disabled');
-      }
-
-      window.map.block.classList.add('map--faded');
-      window.map.addForm.classList.add('ad-form--disabled');
     }
   };
 
