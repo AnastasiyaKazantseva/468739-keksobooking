@@ -1,13 +1,16 @@
 'use strict';
 
 (function () {
+  var PIN_MAIN_LEFT = 570;
+  var PIN_MAIN_TOP = 375;
   var typeSelect = document.getElementById('type');
   var priceInput = document.getElementById('price');
+  var filters = document.querySelector('.map__filters');
 
   typeSelect.addEventListener('change', function () {
     var i = typeSelect.selectedIndex;
-    priceInput.min = window.data.AD_TYPES[i].minprice;
-    priceInput.placeholder = window.data.AD_TYPES[i].minprice;
+    priceInput.min = window.utils.MIN_PRICES[i];
+    priceInput.placeholder = window.utils.MIN_PRICES[i];
   });
 
   var timeInSelect = document.getElementById('timein');
@@ -43,22 +46,27 @@
   roomNumber.addEventListener('change', checkRoomCapacity);
   capacity.addEventListener('change', checkRoomCapacity);
 
-  var inactivatePage = function () {
-    window.map.addForm.reset();
+  var disactivateForm = function () {
+    var fieldsets = window.map.addForm.querySelectorAll('fieldset');
 
-    var oldPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-    for (var i = 0; i < oldPin.length; i++) {
-      window.map.deleteElement(oldPin[i]);
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].setAttribute('disabled', 'disabled');
     }
 
-    var oldPopup = document.querySelector('.map__card');
-    window.map.deleteElement(oldPopup);
+    window.map.block.classList.add('map--faded');
+    window.map.addForm.classList.add('ad-form--disabled');
+  };
 
-    window.map.activatePage(1);
+  var inactivatePage = function () {
+    window.map.addForm.reset();
+    filters.reset();
 
-    window.map.mapPinMain.style.top = window.map.PIN_MAIN_TOP + 'px';
-    window.map.mapPinMain.style.left = window.map.PIN_MAIN_LEFT + 'px';
+    window.pin.clearAll();
+    window.card.remove();
+    disactivateForm();
+
+    window.map.pinMain.style.top = PIN_MAIN_TOP + 'px';
+    window.map.pinMain.style.left = PIN_MAIN_LEFT + 'px';
     window.map.locationPinMain.setAttribute('value', window.map.getPinInactiveCoordinates());
   };
 
@@ -77,7 +85,7 @@
   });
 
   var onOverlayClosePress = function (evt) {
-    if (!evt.keyCode || evt.keyCode === window.map.ESC_KEYCODE) {
+    if (!evt.keyCode || evt.keyCode === window.utils.ESC_KEYCODE) {
       success.classList.add('hidden');
     }
   };
