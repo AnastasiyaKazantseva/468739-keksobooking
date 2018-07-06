@@ -5,6 +5,7 @@
   var PIN_MAIN_TOP = 375;
   var typeSelect = document.getElementById('type');
   var priceInput = document.getElementById('price');
+  var filters = document.querySelector('.map__filters');
 
   typeSelect.addEventListener('change', function () {
     var i = typeSelect.selectedIndex;
@@ -47,6 +48,7 @@
 
   var inactivatePage = function () {
     window.map.addForm.reset();
+    filters.reset();
 
     window.pin.clearAll();
     window.card.remove();

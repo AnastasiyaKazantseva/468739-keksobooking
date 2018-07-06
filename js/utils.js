@@ -36,6 +36,19 @@
       'bungalo': 'Бунгало'
     },
 
+    FILTERS_INITIALISATION: {
+      type: 'any',
+      price: 'any',
+      rooms: 'any',
+      guests: 'any',
+      wifi: false,
+      dishwasher: false,
+      parking: false,
+      washer: false,
+      elevator: false,
+      conditioner: false
+    },
+
     clamp: function (min, max, value) {
       return Math.min(max, Math.max(min, value));
     },

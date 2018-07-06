@@ -20,17 +20,6 @@
       }
     },
 
-    activateForm: function () {
-      var fieldsets = window.map.addForm.querySelectorAll('fieldset');
-
-      for (var i = 0; i < fieldsets.length; i++) {
-        fieldsets[i].removeAttribute('disabled');
-      }
-
-      window.map.block.classList.remove('map--faded');
-      window.map.addForm.classList.remove('ad-form--disabled');
-    },
-
     disactivateForm: function () {
       var fieldsets = window.map.addForm.querySelectorAll('fieldset');
 
@@ -78,12 +67,24 @@
     return getPinCoordinateX() + ', ' + getPinActiveCoordinateY();
   };
 
+  var activateForm = function () {
+    var fieldsets = window.map.addForm.querySelectorAll('fieldset');
+
+    for (var i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].removeAttribute('disabled');
+    }
+
+    window.map.block.classList.remove('map--faded');
+    window.map.addForm.classList.remove('ad-form--disabled');
+  };
+
   window.map.pinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    window.map.activateForm();
-
-    window.backend.load(window.data.onLoad, window.data.onError);
+    if (window.map.block.classList.contains('map--faded')) {
+      activateForm();
+      window.backend.load(window.data.onLoad, window.data.onError);
+    }
 
     var startCoords = {
       x: evt.clientX,

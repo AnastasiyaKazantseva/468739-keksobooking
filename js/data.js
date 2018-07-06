@@ -4,6 +4,7 @@
   window.data = {
     onLoad: function (ads) {
       window.state.ads = ads;
+      window.state.filters = JSON.parse(JSON.stringify(window.utils.FILTERS_INITIALISATION));
       window.pin.renderAll();
     },
 
